@@ -22,12 +22,15 @@ def addUnfilledCategories(runner: dict) -> dict:
     containedCategories = []
     for cat in runner.keys():
         containedCategories.append(cats.index(cat))
-    
+
+
     for cat in cats:
         if not cat in runner.keys():
             runner[cat] = ""
-            if cats.index(cat) > max(containedCategories):
-                runner[cat] = runner[cats[max(containedCategories)]]
+            if not cats.index(cat) > max(containedCategories):
+                for conCat in sorted(containedCategories):
+                    if conCat < cats.index(cat):
+                        runner[cat] = runner[cats[conCat]]
 
     return runner
 
@@ -52,7 +55,6 @@ def calcKinch(runner: dict) -> dict:
 
     return ret
 
-
 def adjustNosla(playerKinches: dict) -> dict:
     """
     Applies weighting to nosla legacy and nosla unrestricted
@@ -67,15 +69,15 @@ def adjustNosla(playerKinches: dict) -> dict:
 
     mine = playerKinches
     if mine["legacy"] == mine["unrestricted"]:
-        mine["legacy"] += 0.01 # Small increment because legacy is more important than nosla :sunglasses:
+        mine["legacy"] += 0.01 # Small increment because legacy is more important than unrestricted :sunglasses:
 
     if mine["legacy"] > mine["unrestricted"]:
         mine["unrestricted"] *= duplicateMultiplier
     else:
         mine["legacy"] *= duplicateMultiplier
+
         
     return mine
-
 
 def adjustGlitchless_Nosla(playerKinches):
     """
@@ -89,11 +91,16 @@ def adjustGlitchless_Nosla(playerKinches):
     # To account for this overlap, the category with the lowest kinch between glitchless and the higher kinch nosla is reduced according to this amount
     balanceMultiplier = 0.8
 
+    
+
     mine = playerKinches
     if mine["unrestricted"] > mine["legacy"]:
         nosla = "unrestricted"
     else:
         nosla = "legacy"
+
+    if mine["glitchless"] == mine[nosla]:
+        mine["glitchless"] += 0.01 # Small increment because glitchless is more important than nosla :sunglasses:
 
     if mine["glitchless"] > mine[nosla]:
         mine[nosla] *= balanceMultiplier
@@ -114,11 +121,18 @@ def adjustInbounds_Nosla(playerKinches):
     # To account for this overlap, the category with the lowest kinch between inbounds and the higher kinch nosla is reduced according to this amount
     balanceMultiplier = 0.9
 
+    
+
     mine = playerKinches
     if mine["unrestricted"] > mine["legacy"]:
         nosla = "unrestricted"
     else:
         nosla = "legacy"
+
+
+    if mine["inbounds"] == mine[nosla]:
+        mine["inbounds"] += 0.01 # Small increment because inbounds is more important than nosla :sunglasses:
+
 
     if mine["inbounds"] > mine[nosla]:
         mine[nosla] *= balanceMultiplier
@@ -127,40 +141,69 @@ def adjustInbounds_Nosla(playerKinches):
 
     return mine
 
+def catScaling(runner: dict) -> dict:
+    """
+    Scales all 5 categories by a fixed per-category value. Currently not used.
+    """
+    scaling = {
+        "glitchless": 1,
+        "legacy": 1,
+        "unrestricted": 1,
+        "inbounds": 100,
+        "oob": 1
+    }
+    for cat in scaling.keys():
+        runner[cat] *= scaling[cat]
 
-def calcSkill(player:dict, divide: bool = True) -> float:
+    return runner
+
+
+def calcSkill(player:dict, divide: bool = True, debug: bool = True) -> float:
     """
     Takes a standard player dict and finds the single number that represents their skill
     Parameters:
         player - the player dict
         divide - whether or not to normalise skill value, needed for initial pass to find normalisation factor
+        debug - name of player to dump incremental kinch values for
     """
 
-    # The players best categories are weighted heavier than their bad ones.
-    # Might remove this, it's tough to say if it matters that much atm
-    skillDropoff = -0.5 
+    if debug:
+        print(player)
     player = addUnfilledCategories(player)
+    if debug:
+        print(player)
+
+
 
     kinches = calcKinch(player)
+    if debug:
+        print(kinches)
+
+    kinches = catScaling(kinches)
+    if debug:
+        print(kinches)
 
     kinches = adjustNosla(kinches)
+    if debug:
+        print(kinches)
     kinches = adjustGlitchless_Nosla(kinches)
+    if debug:
+        print(kinches)
     kinches = adjustInbounds_Nosla(kinches)
+    if debug:
+        print(kinches)
 
-    finalScore = 0
     kinches = list(kinches.values())
     kinches.sort(reverse=True)
-    for index, kinch in enumerate(kinches):
-        kinches[index] = kinch*(2**(skillDropoff*index))
 
-    finalScore += sum(kinches)
+    finalScore = sum(kinches)
     if divide:
         finalScore = finalScore/divisor
 
     return round(finalScore, 2)
 
 
-divisor = calcSkill(records, divide=False)/100
+divisor = calcSkill(records, divide=False, debug=False)/100
 
 
 def getCatString(player):
@@ -171,18 +214,25 @@ def getCatString(player):
             str+= ","
     str = str[:-1]
     return str
-with open("runnersDL.json", "r") as f:
-    runners = json.load(f)
 
-output = []
-for runner in runners.keys():
-    skill = calcSkill(runners[runner])
-    output.append([runner, skill])
+if __name__ == "__main__":
+    with open("runnersDL.json", "r") as f:
+        runners = json.load(f)
 
-# I haven't tested this, if it's broken don't @ me
-# output = sorted(output, key=lambda k: k[1])
+    output = []
+    val = False
+    for runner in runners.keys():
+        if runner == 555:
+            val = True
+        
+        skill = calcSkill(runners[runner], debug=val, divide=True)
+        output.append([runner, skill])
+        val = False
 
-with open("result.csv", "w", newline="") as f:
-    e = csv.writer(f, delimiter=",")
-    for row in output:
-        e.writerow(row)
+
+    output = sorted(output, key=lambda k: k[1], reverse=True)
+
+    with open("result.csv", "w", newline="") as f:
+        e = csv.writer(f, delimiter=",")
+        for row in output:
+            e.writerow(row)

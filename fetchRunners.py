@@ -120,5 +120,5 @@ def getRunnerNames(runners: dict) -> dict:
 if __name__ == "__main__":
     # you only need to run getRuns whenever there is a change to srdc, that's all it's for!
     # comment it out once you've run it once
-    getRuns()
+    # getRuns()
     pullRunners(500)

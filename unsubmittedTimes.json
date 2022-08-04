@@ -11,6 +11,12 @@
     "SiDiouS": {
         "glitchless": 871.845,
         "inbounds": 546.33
+    },
+    "HelyonCZ": {
+        "inbounds": 595,
+        "legacy": 719.07,
+        "unrestricted": 719.07
     }
 
 }
+
