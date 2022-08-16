@@ -6,16 +6,80 @@
     },
     "Dinoz": {  
         "inbounds": 525.97,
-        "oob": 384.97
+        "oob": 384.97,
+        "legacy": 703.39,
+        "unrestricted": 703.39
     },
     "SiDiouS": {
         "glitchless": 871.845,
-        "inbounds": 546.33
+        "inbounds": 531.10
     },
     "HelyonCZ": {
-        "inbounds": 595,
+        "inbounds": 578.34,
         "legacy": 719.07,
         "unrestricted": 719.07
+    },
+    "edible": {
+        "legacy": 783,
+        "inbounds": 642
+    },
+    "CantEven": {
+        "oob": 353.46
+    },
+    "Sarahspeedrun": {
+        "inbounds": 539.79,
+        "oob": 398.32
+    },
+    "nonsensicalalias": {
+        "oob": 394.08
+    },
+    "HalosnowYT": {
+        "legacy": 714.3
+    },
+    "Geagulp": {
+        "inbounds": 515.5,
+        "glitchless": 954,
+        "legacy": 744,
+        "oob": 423
+    },
+    "alatreph": {
+        "legacy": 765.7
+    },
+    "edss": {
+    },
+    "XnonXte": {
+        "inbounds": 553.17
+    },
+    "evanlin96069": {
+        "inbounds": 701.295
+    },
+    "Hrvatskii": {
+        "inbounds": 545.73
+    },
+    "shroom": {
+        "glitchless": 990,
+        "legacy": 786
+    },
+    "siblinghood": {
+        "legacy": 714.3
+    },
+    "aruma": {
+        "oob": 378
+    },
+    "El Korgus" : {
+        "glitchless": 955.6
+    },
+    "gurf": {
+        "glitchless": 959.1
+    },
+    "Grimspace": {
+        "glitchless": 950.3
+    },
+    "ChrisUMB": {
+        "glitchless": 946.4
+    },
+    "WadaWada": {
+        "glitchless": 955.5
     }
 
 }

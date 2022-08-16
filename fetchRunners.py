@@ -33,14 +33,18 @@ def pullRunners(places: int) -> None:
     with open("unsubmittedTimes.json", "r") as f:
         unsubmittedRuns = json.load(f)
 
-    for runner in runners.keys():
-        if runner in unsubmittedRuns.keys():
-            for cat in cats:
-                if cat in unsubmittedRuns[runner].keys():
-                    if cat in runners[runner].keys():
-                        runners[runner][cat] = min(unsubmittedRuns[runner][cat], runners[runner][cat])
-                    else:
-                        runners[runner][cat] = unsubmittedRuns[runner][cat]
+
+    for runner in unsubmittedRuns.keys():
+        if runner in runners.keys():
+            for category in unsubmittedRuns[runner].keys():
+                if category in runners[runner].keys():
+                    runners[runner][category] = min(runners[runner][category], unsubmittedRuns[runner][category])
+                        
+                else:
+                    runners[runner][category] = unsubmittedRuns[runner][category]
+
+        else:
+            runners[runner] = unsubmittedRuns[runner]
         
 
     with open("runnersDL.json", "w") as f:

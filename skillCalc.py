@@ -1,21 +1,23 @@
 import json
 import csv
+from mimetypes import init
 records = {
     "glitchless": 871.845, 
     "legacy": 694.77,
     "unrestricted": 646.02,
     "inbounds": 515.5,
-    "oob": 355.32
+    "oob": 353.46
 }
 cats = ["glitchless", "legacy", "unrestricted", "inbounds", "oob"]
 
 
-def addUnfilledCategories(runner: dict) -> dict:
+def addUnfilledCategories(runner: dict, propagate: bool = True) -> dict:
     """
     Adds categories to runner dict that aren't already there. 
     If it can reuse a lower hierarchy time it will (e.g. glitchless will be used for nosla), otherwise it will leave it blank.
     Parameters:
         runner - Runner dict with only the categories the player has competed in.
+        propagate - whether to use lower hierarchy times 
     Returns:
         runner - Runner dict with all categories, with new categories either upfilled or blank.
     """
@@ -26,11 +28,12 @@ def addUnfilledCategories(runner: dict) -> dict:
 
     for cat in cats:
         if not cat in runner.keys():
-            runner[cat] = ""
-            if not cats.index(cat) > max(containedCategories):
-                for conCat in sorted(containedCategories):
-                    if conCat < cats.index(cat):
-                        runner[cat] = runner[cats[conCat]]
+            runner[cat] = ""    
+            if propagate:
+                if not cats.index(cat) > max(containedCategories):
+                    for conCat in sorted(containedCategories):
+                        if conCat < cats.index(cat):
+                            runner[cat] = runner[cats[conCat]]
 
     return runner
 
@@ -109,7 +112,7 @@ def adjustGlitchless_Nosla(playerKinches):
 
     return mine
 
-def adjustInbounds_Nosla(playerKinches):
+def adjustInbounds_Nosla(playerKinches, initialKinches):
     """
     Applies weighting to nosla legacy/unrestricted and inbounds
     Parameters:
@@ -124,17 +127,17 @@ def adjustInbounds_Nosla(playerKinches):
     
 
     mine = playerKinches
-    if mine["unrestricted"] > mine["legacy"]:
+    if initialKinches["unrestricted"] > initialKinches["legacy"]:
         nosla = "unrestricted"
     else:
         nosla = "legacy"
 
 
-    if mine["inbounds"] == mine[nosla]:
-        mine["inbounds"] += 0.01 # Small increment because inbounds is more important than nosla :sunglasses:
+    if initialKinches["inbounds"] == initialKinches[nosla]:
+        initialKinches["inbounds"] += 0.01 # Small increment because inbounds is more important than nosla :sunglasses:
 
 
-    if mine["inbounds"] > mine[nosla]:
+    if initialKinches["inbounds"] > initialKinches[nosla]:
         mine[nosla] *= balanceMultiplier
     else:
         mine["inbounds"] *= balanceMultiplier
@@ -149,7 +152,7 @@ def catScaling(runner: dict) -> dict:
         "glitchless": 1,
         "legacy": 1,
         "unrestricted": 1,
-        "inbounds": 100,
+        "inbounds": 1,
         "oob": 1
     }
     for cat in scaling.keys():
@@ -167,31 +170,28 @@ def calcSkill(player:dict, divide: bool = True, debug: bool = True) -> float:
         debug - name of player to dump incremental kinch values for
     """
 
-    if debug:
-        print(player)
+    if debug: print(player)
     player = addUnfilledCategories(player)
-    if debug:
-        print(player)
-
+    if debug: print(player)
 
 
     kinches = calcKinch(player)
-    if debug:
-        print(kinches)
+    if debug: print(kinches)
+
 
     kinches = catScaling(kinches)
-    if debug:
-        print(kinches)
+    
+    initialKinches = kinches.copy()
 
     kinches = adjustNosla(kinches)
-    if debug:
-        print(kinches)
+    if debug: print(kinches)
+
     kinches = adjustGlitchless_Nosla(kinches)
-    if debug:
-        print(kinches)
-    kinches = adjustInbounds_Nosla(kinches)
-    if debug:
-        print(kinches)
+    if debug: print(kinches)
+
+    kinches = adjustInbounds_Nosla(kinches, initialKinches)
+    if debug: print(kinches)
+  
 
     kinches = list(kinches.values())
     kinches.sort(reverse=True)
@@ -222,8 +222,6 @@ if __name__ == "__main__":
     output = []
     val = False
     for runner in runners.keys():
-        if runner == 555:
-            val = True
         
         skill = calcSkill(runners[runner], debug=val, divide=True)
         output.append([runner, skill])
