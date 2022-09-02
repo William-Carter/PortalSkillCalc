@@ -13,6 +13,7 @@ cats = ["glitchless", "legacy", "unrestricted", "inbounds", "oob"]
 
 
 
+
 def calcKinch(runner: dict) -> dict:
     """
     Calculates kinchranks (wr/pb*100) for a given player dict
@@ -135,6 +136,27 @@ def catScaling(runner: dict) -> dict:
 
     return runner
 
+def boostUnsubmittedCategories(playerKinches: dict) -> dict:
+    """
+    Fills out categories that do not have a time submitted based on their average kinch (to an extent)
+    Also sets an absolute minimum for kinches.
+    """
+    print(playerKinches)
+    absoluteMinimum = 15
+    maximumUnfilled = 40
+    numOfSubmittedCats = 5-(list(playerKinches.values()).count(0))
+    averageSubmittedKinch = sum(playerKinches.values())/numOfSubmittedCats
+    
+    fillIn = min(maximumUnfilled, averageSubmittedKinch)
+    
+    for cat in playerKinches.keys():
+        if playerKinches[cat] < fillIn:
+            playerKinches[cat] = fillIn
+        if playerKinches[cat] < absoluteMinimum:
+            playerKinches[cat] = absoluteMinimum
+
+    return playerKinches
+
 
 def calcSkill(player:dict, divide: bool = True, debug: bool = True) -> float:
     """
@@ -149,9 +171,11 @@ def calcSkill(player:dict, divide: bool = True, debug: bool = True) -> float:
     player = addUnfilledCategories(player)
     if debug: print(player)
 
+   
 
     kinches = calcKinch(player)
     if debug: print(kinches)
+    kinches = boostUnsubmittedCategories(kinches)
 
 
     kinches = catScaling(kinches)
@@ -172,13 +196,15 @@ def calcSkill(player:dict, divide: bool = True, debug: bool = True) -> float:
     kinches.sort(reverse=True)
 
     finalScore = sum(kinches)
+    
+
     if divide:
         finalScore = finalScore/divisor
-
     return round(finalScore, 2)
 
 
 divisor = calcSkill(records, divide=False, debug=False)/100
+print(divisor)
 
 
 def getCatString(player):
