@@ -1,6 +1,6 @@
 import json
 import csv
-from mimetypes import init
+from addUnfilledCategories import addUnfilledCategories
 records = {
     "glitchless": 871.845, 
     "legacy": 694.77,
@@ -11,31 +11,6 @@ records = {
 cats = ["glitchless", "legacy", "unrestricted", "inbounds", "oob"]
 
 
-def addUnfilledCategories(runner: dict, propagate: bool = True) -> dict:
-    """
-    Adds categories to runner dict that aren't already there. 
-    If it can reuse a lower hierarchy time it will (e.g. glitchless will be used for nosla), otherwise it will leave it blank.
-    Parameters:
-        runner - Runner dict with only the categories the player has competed in.
-        propagate - whether to use lower hierarchy times 
-    Returns:
-        runner - Runner dict with all categories, with new categories either upfilled or blank.
-    """
-    containedCategories = []
-    for cat in runner.keys():
-        containedCategories.append(cats.index(cat))
-
-
-    for cat in cats:
-        if not cat in runner.keys():
-            runner[cat] = ""    
-            if propagate:
-                if not cats.index(cat) > max(containedCategories):
-                    for conCat in sorted(containedCategories):
-                        if conCat < cats.index(cat):
-                            runner[cat] = runner[cats[conCat]]
-
-    return runner
 
 
 def calcKinch(runner: dict) -> dict:

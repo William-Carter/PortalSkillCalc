@@ -2,7 +2,8 @@
     "surrealist": {
         "glitchless": 911.43,
         "oob": 399.16,
-        "inbounds": 609.28
+        "inbounds": 609.28,
+        "unrestricted": 689.79
     },
     "Dinoz": {  
         "inbounds": 525.97,
@@ -11,13 +12,13 @@
         "unrestricted": 703.39
     },
     "SiDiouS": {
-        "glitchless": 871.845,
         "inbounds": 531.10
     },
     "HelyonCZ": {
         "inbounds": 578.34,
         "legacy": 719.07,
-        "unrestricted": 719.07
+        "unrestricted": 672.1,
+        "glitchless": 903.03
     },
     "edible": {
         "legacy": 783,
@@ -31,19 +32,21 @@
         "oob": 398.32
     },
     "nonsensicalalias": {
-        "oob": 394.08
+        "oob": 389.44
     },
     "HalosnowYT": {
-        "legacy": 714.3
+        "legacy": 714.3,
+        "oob": 427,
+        "inbounds": 636
     },
     "Geagulp": {
         "inbounds": 515.5,
-        "glitchless": 954,
+        "glitchless": 947.37,
         "legacy": 744,
         "oob": 423
     },
     "alatreph": {
-        "legacy": 765.7
+        "legacy": 759.54
     },
     "edss": {
     },
@@ -54,7 +57,9 @@
         "inbounds": 701.295
     },
     "Hrvatskii": {
-        "inbounds": 545.73
+        "inbounds": 545.73,
+        "glitchless": 903.96,
+        "unrestricted": 658.4
     },
     "shroom": {
         "glitchless": 990,
@@ -79,7 +84,23 @@
         "glitchless": 946.4
     },
     "WadaWada": {
-        "glitchless": 955.5
+        "glitchless": 939.03
+    },
+    "Zoochable": {
+        "glitchless": 905.25
+    },
+    "AngerySnek": {
+        "glitchless": 974.19
+    },
+    "SillieMillie": {
+        "oob": 434.47
+    },
+    "Reassagressta": {
+        "legacy": 763.03
+    },
+    "adamantite": {
+        "inbounds": 676.05,
+        "glitchless": 931.83
     }
 
 }
